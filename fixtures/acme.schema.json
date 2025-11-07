@@ -1,0 +1,30 @@
+{
+  "sourceFields": [
+    "customer_email",
+    "customer_name",
+    "subscription_id",
+    "plan_tier",
+    "plan_interval",
+    "company_name",
+    "company_size",
+    "mrr",
+    "currency",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "destFields": [
+    "contact.email",
+    "contact.firstName",
+    "contact.lastName",
+    "account.name",
+    "account.industry",
+    "subscription.id",
+    "subscription.status",
+    "subscription.monthlyRevenue",
+    "subscription.currency",
+    "subscription.startDate",
+    "subscription.endDate"
+  ]
+}
+

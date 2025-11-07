@@ -1,0 +1,63 @@
+{
+  "id": "acme",
+  "name": "Acme Corp",
+  "health": "noisy",
+  "environment": "production",
+  "envVars": {
+    "WEBHOOK_URL": "https://api.acme.com/webhooks/foundry",
+    "API_KEY": "sk_live_*********************",
+    "RETRY_COUNT": "3",
+    "BATCH_SIZE": "100"
+  },
+  "mappings": [
+    {
+      "source": "customer_email",
+      "dest": "contact.email",
+      "status": "active",
+      "lastUpdated": "2025-10-15T14:30:00Z"
+    },
+    {
+      "source": "subscription_id",
+      "dest": "subscription.id",
+      "status": "active",
+      "lastUpdated": "2025-10-15T14:30:00Z"
+    },
+    {
+      "source": "plan_tier",
+      "dest": "subscription.planTier",
+      "status": "missing",
+      "lastUpdated": null
+    },
+    {
+      "source": "company_name",
+      "dest": "account.name",
+      "status": "active",
+      "lastUpdated": "2025-10-15T14:30:00Z"
+    },
+    {
+      "source": "mrr",
+      "dest": "subscription.monthlyRevenue",
+      "status": "drift",
+      "lastUpdated": "2025-09-20T10:15:00Z",
+      "note": "Type mismatch: string vs number"
+    }
+  ],
+  "stats": {
+    "totalEvents": 45234,
+    "successRate": 0.891,
+    "errors24h": 48,
+    "avgLatencyMs": 234,
+    "lastError": "2025-11-07T10:15:32Z"
+  },
+  "connectors": {
+    "source": {
+      "type": "stripe",
+      "version": "2023-10-16"
+    },
+    "destination": {
+      "type": "salesforce",
+      "version": "v58.0"
+    }
+  }
+}
+

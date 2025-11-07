@@ -1,97 +1,98 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import CopilotChat from '@/components/CopilotChat'
-import EnvironmentGraph from '@/components/EnvironmentGraph'
-import CodePane from '@/components/CodePane'
-import DiffViewer from '@/components/DiffViewer'
-import PlaybookLibrary from '@/components/PlaybookLibrary'
-import { useFDEStore } from '@/lib/store'
+import { useEffect, useState } from "react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { DeploymentCard } from "@/components/dashboard/DeploymentCard";
+import { PainPointsPanel } from "@/components/dashboard/PainPointsPanel";
+import { LiveMetrics } from "@/components/dashboard/LiveMetrics";
+import { SearchFilter } from "@/components/dashboard/SearchFilter";
+import { AskAI } from "@/components/dashboard/AskAI";
 
-export default function Home() {
-  const { currentClient, selectedPlaybook } = useFDEStore()
-  const [activeTab, setActiveTab] = useState<'graph' | 'code' | 'diff' | 'playbooks'>('graph')
-  const [showPlaybooks, setShowPlaybooks] = useState(false)
-
-  return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            FDE OS Platform
-          </h1>
-          <p className="text-gray-600">
-            AI-powered Operating System for Forward-Deployed Engineering
-          </p>
-        </header>
-
-        <div className="mb-4 flex items-center justify-between">
-          <button
-            onClick={() => setShowPlaybooks(!showPlaybooks)}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 font-medium text-sm"
-          >
-            {showPlaybooks ? 'Hide' : 'Show'} Playbook Library
-          </button>
-        </div>
-
-        {showPlaybooks && (
-          <div className="mb-6">
-            <PlaybookLibrary />
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Copilot Chat */}
-          <div className="lg:col-span-1">
-            <CopilotChat />
-          </div>
-
-          {/* Right Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tab Navigation */}
-            <div className="flex space-x-4 border-b border-gray-200">
-              <button
-                onClick={() => setActiveTab('graph')}
-                className={`px-4 py-2 font-medium ${
-                  activeTab === 'graph'
-                    ? 'text-primary-600 border-b-2 border-primary-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Environment Graph
-              </button>
-              <button
-                onClick={() => setActiveTab('code')}
-                className={`px-4 py-2 font-medium ${
-                  activeTab === 'code'
-                    ? 'text-primary-600 border-b-2 border-primary-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Generated Artifacts
-              </button>
-              {selectedPlaybook && (
-                <button
-                  onClick={() => setActiveTab('diff')}
-                  className={`px-4 py-2 font-medium ${
-                    activeTab === 'diff'
-                      ? 'text-primary-600 border-b-2 border-primary-600'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Playbook Comparison
-                </button>
-              )}
-            </div>
-
-            {/* Tab Content */}
-            {activeTab === 'graph' && <EnvironmentGraph />}
-            {activeTab === 'code' && <CodePane />}
-            {activeTab === 'diff' && selectedPlaybook && <DiffViewer />}
-          </div>
-        </div>
-      </div>
-    </main>
-  )
+interface Deployment {
+  id: string;
+  name: string;
+  health: "healthy" | "noisy" | "degraded";
+  errorCounts: number[];
+  tags: string[];
+  env: string;
 }
 
+export default function DashboardPage() {
+  const [deployments, setDeployments] = useState<Deployment[]>([]);
+  const [filteredDeployments, setFilteredDeployments] = useState<Deployment[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({ health: "all", env: "all" });
+
+  useEffect(() => {
+    fetch("/api/deployments")
+      .then((res) => res.json())
+      .then((data) => {
+        setDeployments(data);
+        setFilteredDeployments(data);
+      })
+      .catch((err) => console.error("Failed to fetch deployments:", err));
+  }, []);
+
+  useEffect(() => {
+    let filtered = deployments;
+
+    // Apply search
+    if (searchQuery) {
+      filtered = filtered.filter((d) =>
+        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        d.id.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply health filter
+    if (filters.health !== "all") {
+      filtered = filtered.filter((d) => d.health === filters.health);
+    }
+
+    // Apply env filter
+    if (filters.env !== "all") {
+      filtered = filtered.filter((d) => d.env === filters.env);
+    }
+
+    setFilteredDeployments(filtered);
+  }, [searchQuery, filters, deployments]);
+
+  return (
+    <AppLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Deployments</h1>
+          <p className="text-muted-foreground mt-1">
+            Monitor and manage your field data engine deployments
+          </p>
+        </div>
+
+        <SearchFilter
+          onSearch={setSearchQuery}
+          onFilterChange={setFilters}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {filteredDeployments.length > 0 ? (
+            filteredDeployments.map((deployment) => (
+              <DeploymentCard key={deployment.id} deployment={deployment} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-muted-foreground">
+              <p>No deployments found matching your filters</p>
+            </div>
+          )}
+        </div>
+
+        <LiveMetrics />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <PainPointsPanel />
+          </div>
+          <AskAI />
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
