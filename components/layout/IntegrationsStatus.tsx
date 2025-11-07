@@ -21,13 +21,17 @@ export function IntegrationsStatus() {
   useEffect(() => {
     // Check localStorage for integration status
     const llmConfig = localStorage.getItem("llm-config");
-    if (llmConfig) {
-      const config = JSON.parse(llmConfig);
-      setIntegrations((prev) => ({
-        ...prev,
-        llm: !config.useStub && !!config.apiKey,
-      }));
-    }
+    const slackConnected = localStorage.getItem("slack-connected") === "true";
+    const githubConnected = localStorage.getItem("github-connected") === "true";
+    
+    setIntegrations({
+      slack: slackConnected,
+      github: githubConnected,
+      llm: llmConfig ? (() => {
+        const config = JSON.parse(llmConfig);
+        return !config.useStub && !!config.apiKey;
+      })() : false
+    });
   }, []);
 
   const connectedCount = Object.values(integrations).filter(Boolean).length;

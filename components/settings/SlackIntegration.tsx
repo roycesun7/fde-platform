@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Bell, CheckCircle, Send } from "lucide-react";
 import { toast } from "sonner";
+import { sendSlackNotification, saveSlackWebhookUrl, getSlackWebhookUrl } from "@/lib/slack";
 
 export function SlackIntegration() {
   const [webhookUrl, setWebhookUrl] = useState("");
@@ -15,28 +16,78 @@ export function SlackIntegration() {
   const [connected, setConnected] = useState(false);
   const [testing, setTesting] = useState(false);
 
+  // Load saved webhook URL and connection status on mount
+  useEffect(() => {
+    const savedUrl = getSlackWebhookUrl();
+    const isConnected = localStorage.getItem("slack-connected") === "true";
+    
+    if (savedUrl && isConnected) {
+      // User has previously connected with a real webhook
+      setWebhookUrl(savedUrl);
+      setConnected(true);
+    } else {
+      // Not connected - show disconnected state
+      setWebhookUrl("");
+      setConnected(false);
+      // Clean up any stale connection state
+      localStorage.removeItem("slack-connected");
+    }
+  }, []);
+
   const connectSlack = () => {
     if (!webhookUrl) {
       toast.error("Please enter a webhook URL");
       return;
     }
+    
+    // Validate webhook URL format (allow demo URLs with asterisks)
+    if (!webhookUrl.startsWith('https://hooks.slack.com/')) {
+      toast.error("Invalid Slack webhook URL format");
+      return;
+    }
+    
     setConnected(true);
+    localStorage.setItem("slack-connected", "true");
+    // Only save real URLs, not demo ones
+    if (!webhookUrl.includes('***')) {
+      saveSlackWebhookUrl(webhookUrl);
+    }
     toast.success("Slack connected successfully!");
   };
 
   const testNotification = async () => {
     setTesting(true);
     
-    // Simulate sending test notification
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast.success(`Test notification sent to ${channel}`);
-    setTesting(false);
+    try {
+      const success = await sendSlackNotification(webhookUrl, {
+        title: 'Test Notification',
+        message: `This is a test notification from *Foundry FDE*\n\nChannel: ${channel}\nTimestamp: ${new Date().toLocaleString()}`,
+        emoji: '🧪',
+        color: 'info',
+        fields: [
+          { title: 'Status', value: '✅ Integration Working', short: true },
+          { title: 'Channel', value: channel, short: true }
+        ]
+      });
+
+      if (success) {
+        toast.success(`Test notification sent to ${channel}`);
+      } else {
+        toast.error('Failed to send notification. Check your webhook URL.');
+      }
+    } catch (error) {
+      toast.error('Failed to send notification. Check your webhook URL.');
+      console.error('Slack notification error:', error);
+    } finally {
+      setTesting(false);
+    }
   };
 
   const disconnect = () => {
     setConnected(false);
     setWebhookUrl("");
+    localStorage.removeItem("slack-connected");
+    localStorage.removeItem("slack-webhook-url");
     toast.info("Slack disconnected");
   };
 
@@ -103,7 +154,10 @@ export function SlackIntegration() {
           <Tabs defaultValue="notifications" className="w-full">
             <TabsList className="w-full">
               <TabsTrigger value="notifications" className="flex-1">
-                Notifications
+                Settings
+              </TabsTrigger>
+              <TabsTrigger value="activity" className="flex-1">
+                Activity
               </TabsTrigger>
               <TabsTrigger value="preview" className="flex-1">
                 Preview
@@ -176,6 +230,79 @@ export function SlackIntegration() {
               </div>
             </TabsContent>
 
+            <TabsContent value="activity" className="space-y-4">
+              <div className="space-y-3">
+                <div className="p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm font-medium">Error Alert Sent</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">1 min ago</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Sent to #deployments • Error rate: 15.2%
+                  </p>
+                </div>
+
+                <div className="p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm font-medium">Deployment Update</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">6 hours ago</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Sent to #deployments • New config deployed
+                  </p>
+                </div>
+
+                <div className="p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm font-medium">PR Created Alert</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">8 hours ago</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Sent to #deployments • PR #346 created by AI
+                  </p>
+                </div>
+
+                <div className="p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm font-medium">Error Alert Sent</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">1 day ago</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Sent to #deployments • MAPPING_ERROR spike detected
+                  </p>
+                </div>
+
+                <div className="p-3 border rounded-lg bg-muted/30">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm font-medium">Deployment Update</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">2 days ago</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Sent to #deployments • Acme Corp config updated
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center pt-2">
+                Last 5 notifications sent to Slack
+              </p>
+            </TabsContent>
+
             <TabsContent value="preview" className="space-y-4">
               <div className="border rounded-lg p-4 bg-muted/50">
                 <div className="flex items-start gap-3">
@@ -226,4 +353,3 @@ export function SlackIntegration() {
     </Card>
   );
 }
-

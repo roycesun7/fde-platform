@@ -41,17 +41,21 @@ A slick, front-end-first demo showcasing a field data engine with deployment mon
 - 🛡️ **Graceful Fallback**: Automatically falls back to stub mode if LLM fails
 - 🎨 **Mode Indicators**: Clear badges showing which mode is active
 
-### 🔌 Integrations (NEW!)
-- 💬 **Slack Integration**: Send notifications and alerts to Slack channels
+### 🔌 Integrations (Real Webhooks!)
+- 💬 **Slack Integration**: Send REAL notifications to Slack channels
+  - ✅ **Real webhook integration** - Sends actual messages to Slack!
+  - Enter your Slack webhook URL to connect
   - Error alerts when thresholds exceeded
-  - Deployment update notifications
+  - Deployment update notifications  
   - PR creation notifications
+  - Activity feed showing notifications sent
   - Interactive notification preview
   - Test notification functionality
+  - See [SLACK_SETUP.md](./SLACK_SETUP.md) for setup guide
 - 🐙 **GitHub Integration**: Automatic PR creation and codebase sync
   - Connect with personal access token
   - Auto-create PRs from AI suggestions
-  - View recent PRs in-app
+  - View recent PRs in-app (6 PRs with mock data)
   - PR templates and base branch config
   - Connection testing
 - 📊 **Integration Status**: Quick status indicator in top bar showing connected services

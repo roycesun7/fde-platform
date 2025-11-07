@@ -11,6 +11,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { toast } from "sonner";
+import { sendPRNotification } from "@/lib/slack";
 
 interface PRPreviewDrawerProps {
   open: boolean;
@@ -39,7 +40,30 @@ export function PRPreviewDrawer({
       });
 
       const data = await res.json();
+      
+      // Show GitHub PR created
       toast.success(`PR #${data.prNumber} created successfully!`);
+      
+      // Send real Slack notification (if Slack is connected)
+      const slackConnected = localStorage.getItem("slack-connected");
+      if (slackConnected === "true") {
+        // Send notification in background
+        sendPRNotification(
+          data.prNumber,
+          `Add mapping for ${missingMapping?.source}`,
+          data.url,
+          deploymentId
+        ).then(success => {
+          if (success) {
+            setTimeout(() => {
+              toast.success("Slack notification sent to #deployments");
+            }, 1000);
+          }
+        }).catch(err => {
+          console.error('Failed to send Slack notification:', err);
+        });
+      }
+      
       onOpenChange(false);
     } catch (error) {
       toast.error("Failed to create PR");

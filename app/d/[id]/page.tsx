@@ -15,7 +15,9 @@ import { WebhookTester } from "@/components/deployment/WebhookTester";
 import { ActivityTimeline } from "@/components/deployment/ActivityTimeline";
 import { ConfigManager } from "@/components/deployment/ConfigManager";
 import { CodeDiffViewer } from "@/components/deployment/CodeDiffViewer";
+import { SlackAlertConfig } from "@/components/deployment/SlackAlertConfig";
 import { AlertCircle, CheckCircle, TrendingUp, Clock } from "lucide-react";
+import { useDeploymentMonitoring } from "@/hooks/useDeploymentMonitoring";
 
 export default function DeploymentDetailPage() {
   const params = useParams();
@@ -35,6 +37,21 @@ export default function DeploymentDetailPage() {
         setLoading(false);
       });
   }, [id]);
+
+  // Monitor deployment - must be called unconditionally (before any early returns)
+  useDeploymentMonitoring(
+    id,
+    deployment?.name || '',
+    deployment ? {
+      errorCount: deployment.stats?.errors24h || 0,
+      totalEvents: deployment.stats?.totalEvents || 0,
+      errorsByType: deployment.logs?.reduce((acc: Record<string, number>, log: any) => {
+        acc[log.errorCode] = (acc[log.errorCode] || 0) + 1;
+        return acc;
+      }, {}) || {}
+    } : undefined,
+    !!deployment // Only enable when deployment is loaded
+  );
 
   if (loading) {
     return (
@@ -104,6 +121,7 @@ export default function DeploymentDetailPage() {
             <TabsTrigger value="webhook">Webhook</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="alerts">Alerts</TabsTrigger>
             <TabsTrigger value="config">Config</TabsTrigger>
           </TabsList>
 
@@ -174,6 +192,21 @@ export default function DeploymentDetailPage() {
 
           <TabsContent value="activity">
             <ActivityTimeline />
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <SlackAlertConfig 
+              deploymentId={id}
+              deploymentName={deployment.name}
+              stats={{
+                errorCount: stats.errors24h || 0,
+                totalEvents: stats.totalEvents || 0,
+                errorsByType: deployment.logs?.reduce((acc: Record<string, number>, log: any) => {
+                  acc[log.errorCode] = (acc[log.errorCode] || 0) + 1;
+                  return acc;
+                }, {}) || {}
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="config">
