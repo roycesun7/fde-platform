@@ -1,0 +1,52 @@
+{
+  "id": "playbook-client-q",
+  "name": "Client Q - Data Platform",
+  "clientId": "client-q",
+  "createdAt": "2024-01-15T10:00:00Z",
+  "architecture": {
+    "components": [
+      {
+        "id": "snowflake-q",
+        "type": "database",
+        "name": "Snowflake Data Warehouse",
+        "provider": "Snowflake",
+        "status": "active",
+        "config": {
+          "warehouse": "COMPUTE_WH",
+          "database": "PROD_DB"
+        }
+      },
+      {
+        "id": "s3-q",
+        "type": "storage",
+        "name": "S3 Bucket",
+        "provider": "AWS",
+        "status": "active",
+        "config": {
+          "bucket": "client-q-data-bucket",
+          "region": "us-west-2"
+        }
+      },
+      {
+        "id": "dbt-q",
+        "type": "transformation",
+        "name": "dbt Core",
+        "provider": "dbt Labs",
+        "status": "active",
+        "config": {
+          "project": "client_q_dbt_project",
+          "profiles": "snowflake"
+        }
+      }
+    ],
+    "risks": [
+      "Production deployment requires careful testing"
+    ],
+    "estimatedTime": "1.5 hours"
+  },
+  "artifacts": {
+    "terraform": "# Terraform configuration for Client Q\nresource \"snowflake_warehouse\" \"compute_wh\" {\n  name = \"COMPUTE_WH\"\n}\n\nresource \"aws_s3_bucket\" \"data\" {\n  bucket = \"client-q-data-bucket\"\n}",
+    "config": "deployment:\n  name: client-q-deployment\n  environment: production"
+  }
+}
+

@@ -1,0 +1,60 @@
+{
+  "id": "client-a",
+  "name": "Client A - Enterprise Analytics",
+  "requirements": "We need a Snowflake data warehouse connected to S3, with dbt for transformations and Airflow for orchestration. Production environment with high availability.",
+  "status": "active",
+  "architecture": {
+    "components": [
+      {
+        "id": "snowflake-1",
+        "type": "database",
+        "name": "Snowflake Data Warehouse",
+        "provider": "Snowflake",
+        "status": "active",
+        "config": {
+          "warehouse": "COMPUTE_WH",
+          "database": "PROD_DB"
+        }
+      },
+      {
+        "id": "s3-1",
+        "type": "storage",
+        "name": "S3 Bucket",
+        "provider": "AWS",
+        "status": "active",
+        "config": {
+          "bucket": "client-a-data-bucket",
+          "region": "us-east-1"
+        }
+      },
+      {
+        "id": "dbt-1",
+        "type": "transformation",
+        "name": "dbt Core",
+        "provider": "dbt Labs",
+        "status": "active",
+        "config": {
+          "project": "client_a_dbt_project",
+          "profiles": "snowflake"
+        }
+      },
+      {
+        "id": "airflow-1",
+        "type": "orchestration",
+        "name": "Apache Airflow",
+        "provider": "Apache",
+        "status": "active",
+        "config": {
+          "version": "2.8.0",
+          "executor": "KubernetesExecutor"
+        }
+      }
+    ],
+    "risks": [
+      "Production deployment requires careful testing and rollback plan",
+      "Complex architecture may require additional monitoring and maintenance"
+    ],
+    "estimatedTime": "2 hours"
+  }
+}
+

@@ -1,0 +1,58 @@
+{
+  "id": "template-snowflake-s3-dbt-airflow",
+  "name": "Snowflake + S3 + dbt + Airflow",
+  "description": "Standard data warehouse pipeline with Snowflake, S3 storage, dbt transformations, and Airflow orchestration",
+  "architecture": {
+    "components": [
+      {
+        "id": "snowflake-template",
+        "type": "database",
+        "name": "Snowflake Data Warehouse",
+        "provider": "Snowflake",
+        "status": "pending",
+        "config": {
+          "warehouse": "COMPUTE_WH",
+          "database": "PROD_DB"
+        }
+      },
+      {
+        "id": "s3-template",
+        "type": "storage",
+        "name": "S3 Bucket",
+        "provider": "AWS",
+        "status": "pending",
+        "config": {
+          "bucket": "{{CLIENT_NAME}}-data-bucket",
+          "region": "us-east-1"
+        }
+      },
+      {
+        "id": "dbt-template",
+        "type": "transformation",
+        "name": "dbt Core",
+        "provider": "dbt Labs",
+        "status": "pending",
+        "config": {
+          "project": "{{CLIENT_NAME}}_dbt_project",
+          "profiles": "snowflake"
+        }
+      },
+      {
+        "id": "airflow-template",
+        "type": "orchestration",
+        "name": "Apache Airflow",
+        "provider": "Apache",
+        "status": "pending",
+        "config": {
+          "version": "2.8.0",
+          "executor": "KubernetesExecutor"
+        }
+      }
+    ],
+    "risks": [
+      "Production deployment requires careful testing and rollback plan"
+    ],
+    "estimatedTime": "2 hours"
+  }
+}
+
