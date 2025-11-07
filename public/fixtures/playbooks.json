@@ -1,0 +1,79 @@
+[
+  {
+    "id": "field-mapping-drift",
+    "title": "Field Mapping Drift",
+    "description": "Detect and fix missing or misaligned field mappings between source and destination",
+    "triggers": [
+      "MAPPING_ERROR codes spike",
+      "New fields appear in source schema",
+      "Destination schema version update"
+    ],
+    "steps": [
+      "Analyze source and destination schemas",
+      "Identify unmapped or drifted fields",
+      "Generate mapping code",
+      "Create PR with changes",
+      "Run backfill for affected records"
+    ],
+    "codeSamples": [
+      {
+        "language": "typescript",
+        "filename": "mappings/acme.ts",
+        "content": "export function mapPlanTier(source: any) {\n  return {\n    'subscription.planTier': source.plan_tier?.toLowerCase() || 'starter'\n  };\n}"
+      }
+    ],
+    "estimatedTime": "15 min",
+    "impact": "High"
+  },
+  {
+    "id": "webhook-retry",
+    "title": "Webhook Retry Strategy",
+    "description": "Implement exponential backoff for failed webhook deliveries",
+    "triggers": [
+      "WEBHOOK_TIMEOUT or RATE_LIMIT errors",
+      "Destination service degradation",
+      "Network instability"
+    ],
+    "steps": [
+      "Identify failed webhook events",
+      "Configure retry policy (exponential backoff)",
+      "Update webhook handler code",
+      "Replay failed events with new policy"
+    ],
+    "codeSamples": [
+      {
+        "language": "typescript",
+        "filename": "webhooks/retry.ts",
+        "content": "async function sendWithRetry(url: string, payload: any, maxRetries = 3) {\n  for (let i = 0; i < maxRetries; i++) {\n    try {\n      return await fetch(url, { method: 'POST', body: JSON.stringify(payload) });\n    } catch (err) {\n      if (i === maxRetries - 1) throw err;\n      await sleep(Math.pow(2, i) * 1000);\n    }\n  }\n}"
+      }
+    ],
+    "estimatedTime": "20 min",
+    "impact": "Medium"
+  },
+  {
+    "id": "rate-limit-backoff",
+    "title": "Rate Limit Backoff",
+    "description": "Implement adaptive rate limiting to respect destination API limits",
+    "triggers": [
+      "429 Rate Limit responses",
+      "Consistent throttling from destination",
+      "Burst traffic patterns"
+    ],
+    "steps": [
+      "Parse rate limit headers from destination",
+      "Implement token bucket algorithm",
+      "Add circuit breaker for sustained failures",
+      "Monitor and adjust limits dynamically"
+    ],
+    "codeSamples": [
+      {
+        "language": "typescript",
+        "filename": "rate-limiter.ts",
+        "content": "class RateLimiter {\n  private tokens: number;\n  private lastRefill: number;\n  \n  constructor(private maxTokens: number, private refillRate: number) {\n    this.tokens = maxTokens;\n    this.lastRefill = Date.now();\n  }\n  \n  async acquire(): Promise<void> {\n    this.refill();\n    if (this.tokens < 1) {\n      const waitTime = (1 - this.tokens) / this.refillRate * 1000;\n      await sleep(waitTime);\n      this.refill();\n    }\n    this.tokens -= 1;\n  }\n  \n  private refill() {\n    const now = Date.now();\n    const elapsed = (now - this.lastRefill) / 1000;\n    this.tokens = Math.min(this.maxTokens, this.tokens + elapsed * this.refillRate);\n    this.lastRefill = now;\n  }\n}"
+      }
+    ],
+    "estimatedTime": "30 min",
+    "impact": "High"
+  }
+]
+
