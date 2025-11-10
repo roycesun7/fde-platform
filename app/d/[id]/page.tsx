@@ -16,6 +16,7 @@ import { ActivityTimeline } from "@/components/deployment/ActivityTimeline";
 import { ConfigManager } from "@/components/deployment/ConfigManager";
 import { CodeDiffViewer } from "@/components/deployment/CodeDiffViewer";
 import { SlackAlertConfig } from "@/components/deployment/SlackAlertConfig";
+import { CodeAssistant } from "@/components/deployment/CodeAssistant";
 import { AlertCircle, CheckCircle, TrendingUp, Clock } from "lucide-react";
 import { useDeploymentMonitoring } from "@/hooks/useDeploymentMonitoring";
 
@@ -262,7 +263,8 @@ export default function DeploymentDetailPage() {
             />
           </TabsContent>
 
-          <TabsContent value="code">
+          <TabsContent value="code" className="space-y-6">
+            <CodeAssistant />
             <CodeDiffViewer />
           </TabsContent>
 
