@@ -113,12 +113,10 @@ export function RunbookChat({ deploymentId }: RunbookChatProps) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Runbook Copilot</CardTitle>
-          <Badge variant={currentMode === "llm" ? "default" : "secondary"} className="text-xs">
-            {currentMode === "llm" ? "AI Powered" : "Stub Mode"}
-          </Badge>
-        </div>
+        <CardTitle>Quick Actions</CardTitle>
+        <p className="text-sm text-muted-foreground mt-1">
+          Ask for help with deployment issues
+        </p>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
         <div className="flex-1 overflow-auto space-y-4 mb-4">

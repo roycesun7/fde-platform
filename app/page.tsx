@@ -71,7 +71,7 @@ export default function DashboardPage() {
         {/* Header with Stats Bar */}
         <div className="space-y-6 animate-fade-in">
           <div className="flex items-start justify-between">
-            <div>
+        <div>
               <h1 className="text-4xl font-bold tracking-tight">Projects & Deployments</h1>
               <p className="text-muted-foreground mt-2">
                 Hierarchical view of projects and their deployments
@@ -140,10 +140,10 @@ export default function DashboardPage() {
 
         {/* Search and Filters */}
         <div className="bg-muted/30 -mx-6 px-6 py-6 border-y">
-          <SearchFilter
-            onSearch={setSearchQuery}
-            onFilterChange={setFilters}
-          />
+        <SearchFilter
+          onSearch={setSearchQuery}
+          onFilterChange={setFilters}
+        />
         </div>
 
         {/* View Toggle */}
@@ -161,7 +161,7 @@ export default function DashboardPage() {
           {/* Grid View */}
           <TabsContent value="grid">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredDeployments.length > 0 ? (
+          {filteredDeployments.length > 0 ? (
                 filteredDeployments.map((deployment, index) => (
                   <div 
                     key={deployment.id} 
@@ -170,8 +170,8 @@ export default function DashboardPage() {
                   >
                     <DeploymentCard deployment={deployment} />
                   </div>
-                ))
-              ) : (
+            ))
+          ) : (
                 <div className="col-span-full text-center py-16 text-muted-foreground animate-fade-in">
                   <div className="space-y-2">
                     <p className="text-lg font-medium">No deployments found</p>

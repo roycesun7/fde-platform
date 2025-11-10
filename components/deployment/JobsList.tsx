@@ -31,7 +31,7 @@ const statusConfig = {
   queued: { label: "Queued", variant: "secondary" as const },
   running: { label: "Running", variant: "default" as const },
   succeeded: { label: "Succeeded", variant: "outline" as const },
-  failed: { label: "Destructive", variant: "destructive" as const },
+  failed: { label: "Failed", variant: "destructive" as const },
 };
 
 export function JobsList({ deploymentId }: JobsListProps) {

@@ -9,12 +9,7 @@ import { KPICard } from "@/components/deployment/KPICard";
 import { FailuresTable } from "@/components/deployment/FailuresTable";
 import { MappingsTable } from "@/components/deployment/MappingsTable";
 import { JobsList } from "@/components/deployment/JobsList";
-import { RunbookChat } from "@/components/deployment/RunbookChat";
 import { ErrorAnalytics } from "@/components/deployment/ErrorAnalytics";
-import { WebhookTester } from "@/components/deployment/WebhookTester";
-import { ActivityTimeline } from "@/components/deployment/ActivityTimeline";
-import { ConfigManager } from "@/components/deployment/ConfigManager";
-import { CodeDiffViewer } from "@/components/deployment/CodeDiffViewer";
 import { SlackAlertConfig } from "@/components/deployment/SlackAlertConfig";
 import { CodeAssistant } from "@/components/deployment/CodeAssistant";
 import { AlertCircle, CheckCircle, TrendingUp, Clock } from "lucide-react";
@@ -203,11 +198,8 @@ export default function DeploymentDetailPage() {
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="mappings">Mappings</TabsTrigger>
             <TabsTrigger value="code">Code</TabsTrigger>
-            <TabsTrigger value="webhook">Webhook</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
             <TabsTrigger value="alerts">Alerts</TabsTrigger>
-            <TabsTrigger value="config">Config</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -242,14 +234,7 @@ export default function DeploymentDetailPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <FailuresTable logs={deployment.logs || []} />
-              </div>
-              <div>
-                <RunbookChat deploymentId={id} />
-              </div>
-            </div>
+            <FailuresTable logs={deployment.logs || []} />
           </TabsContent>
 
           <TabsContent value="analytics">
@@ -265,19 +250,10 @@ export default function DeploymentDetailPage() {
 
           <TabsContent value="code" className="space-y-6">
             <CodeAssistant />
-            <CodeDiffViewer />
-          </TabsContent>
-
-          <TabsContent value="webhook">
-            <WebhookTester />
           </TabsContent>
 
           <TabsContent value="jobs">
             <JobsList deploymentId={id} />
-          </TabsContent>
-
-          <TabsContent value="activity">
-            <ActivityTimeline />
           </TabsContent>
 
           <TabsContent value="alerts">
@@ -293,10 +269,6 @@ export default function DeploymentDetailPage() {
                 }, {}) || {}
               }}
             />
-          </TabsContent>
-
-          <TabsContent value="config">
-            <ConfigManager deployment={deployment} />
           </TabsContent>
         </Tabs>
       </div>
