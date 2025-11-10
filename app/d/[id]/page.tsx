@@ -57,7 +57,12 @@ export default function DeploymentDetailPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 animate-pulse">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-lg font-medium">Loading deployment...</p>
+          </div>
         </div>
       </AppLayout>
     );
@@ -67,7 +72,17 @@ export default function DeploymentDetailPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Deployment not found</p>
+          <div className="text-center space-y-4 max-w-md">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
+            <div>
+              <p className="text-xl font-semibold">Deployment not found</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                The deployment you're looking for doesn't exist or has been removed.
+              </p>
+            </div>
+          </div>
         </div>
       </AppLayout>
     );
@@ -101,14 +116,83 @@ export default function DeploymentDetailPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">{deployment.name}</h1>
-          <div className="flex items-center gap-2 mt-2">
-            <Badge>{deployment.environment || "production"}</Badge>
-            <span className="text-sm text-muted-foreground">
-              {deployment.connectors.source.type} → {deployment.connectors.destination.type}
-            </span>
+      <div className="space-y-6 animate-fade-in">
+        {/* Header with Status Bar */}
+        <div className="space-y-4">
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold tracking-tight">{deployment.name}</h1>
+                <Badge className="text-sm px-3 py-1">
+                  {deployment.environment || "production"}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <span className="text-muted-foreground">
+                  {deployment.connectors.source.type}
+                </span>
+                <span className="text-muted-foreground">→</span>
+                <span className="text-muted-foreground">
+                  {deployment.connectors.destination.type}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Status Bar */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 border rounded bg-card">
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Success Rate</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-green-600">{successRate}%</span>
+              </div>
+              <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-600" 
+                  style={{ width: `${successRate}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">24h Errors</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold">{stats.errors24h || 0}</span>
+              </div>
+              <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-red-600" 
+                  style={{ width: `${Math.min((stats.errors24h || 0) / 100 * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Avg Latency</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold">{stats.avgLatency || 0}</span>
+                <span className="text-sm text-muted-foreground">ms</span>
+              </div>
+              <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-600" 
+                  style={{ width: `${Math.min((stats.avgLatency || 0) / 500 * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Total Events</div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold">{stats.totalEvents || 0}</span>
+              </div>
+              <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-foreground" 
+                  style={{ width: '100%' }}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
 

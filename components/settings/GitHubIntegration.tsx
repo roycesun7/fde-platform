@@ -60,7 +60,7 @@ export function GitHubIntegration() {
       title: "Implement exponential backoff for webhooks",
       status: "open",
       branch: "feat/webhook-retry",
-      author: "sarah@acme.com",
+      author: "sarah@dropbox.com",
       createdAt: "2 days ago",
     },
   ];
@@ -240,4 +240,3 @@ export function GitHubIntegration() {
     </Card>
   );
 }
-

@@ -34,7 +34,7 @@ export default function PlaybooksPage() {
   }, []);
 
   const applyPlaybook = (playbook: Playbook) => {
-    toast.success(`Applied "${playbook.title}" to Acme deployment`);
+    toast.success(`Applied "${playbook.title}" to Dropbox deployment`);
     // In a real app, this would trigger the playbook execution
   };
 
@@ -116,7 +116,7 @@ export default function PlaybooksPage() {
                   onClick={() => applyPlaybook(playbook)}
                 >
                   <Rocket className="h-4 w-4 mr-2" />
-                  Apply to Acme
+                      Apply to Dropbox
                 </Button>
               </CardContent>
             </Card>

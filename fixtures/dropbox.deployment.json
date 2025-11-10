@@ -1,10 +1,10 @@
 {
-  "id": "acme",
-  "name": "Acme Corp",
+  "id": "dropbox",
+  "name": "Dropbox",
   "health": "noisy",
   "environment": "production",
   "envVars": {
-    "WEBHOOK_URL": "https://api.acme.com/webhooks/foundry",
+    "WEBHOOK_URL": "https://api.dropbox.com/webhooks/foundry",
     "API_KEY": "sk_live_*********************",
     "RETRY_COUNT": "3",
     "BATCH_SIZE": "100"

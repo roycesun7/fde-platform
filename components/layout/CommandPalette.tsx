@@ -35,7 +35,7 @@ export function CommandPalette() {
 
     switch (action) {
       case "open-acme":
-        router.push("/d/acme");
+        router.push("/d/dropbox");
         break;
 
       case "generate-pr":
@@ -45,7 +45,7 @@ export function CommandPalette() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              deploymentId: "acme",
+              deploymentId: "dropbox",
               diff: "Sample diff",
             }),
           });
@@ -63,7 +63,7 @@ export function CommandPalette() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              deploymentId: "acme",
+              deploymentId: "dropbox",
               count: 123,
             }),
           });
@@ -81,7 +81,7 @@ export function CommandPalette() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              deploymentId: "acme",
+              deploymentId: "dropbox",
               count: 20,
             }),
           });
@@ -102,7 +102,7 @@ export function CommandPalette() {
         <CommandGroup heading="Navigation">
           <CommandItem onSelect={() => runAction("open-acme")}>
             <Rocket className="mr-2 h-4 w-4" />
-            <span>Open Acme Deployment</span>
+            <span>Open Dropbox Deployment</span>
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading="Actions">

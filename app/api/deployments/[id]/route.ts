@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import deploymentsData from "@/fixtures/deployments.json";
-import acmeDeployment from "@/fixtures/acme.deployment.json";
-import acmeLogs from "@/fixtures/acme.logs.json";
-import acmeSchema from "@/fixtures/acme.schema.json";
+import dropboxDeployment from "@/fixtures/dropbox.deployment.json";
+import dropboxLogs from "@/fixtures/dropbox.logs.json";
+import dropboxSchema from "@/fixtures/dropbox.schema.json";
 
 export async function GET(
   request: Request,
@@ -10,12 +10,12 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  if (id === "acme") {
-    // Aggregate all acme fixtures
+  if (id === "dropbox") {
+    // Aggregate all dropbox fixtures
     return NextResponse.json({
-      ...acmeDeployment,
-      logs: acmeLogs,
-      schema: acmeSchema,
+      ...dropboxDeployment,
+      logs: dropboxLogs,
+      schema: dropboxSchema,
     });
   }
 

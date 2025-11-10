@@ -15,7 +15,7 @@ const samplePayloads = {
     customer_email: "test@example.com",
     customer_name: "John Doe",
     plan_tier: "enterprise",
-    company_name: "Acme Corp",
+    company_name: "Dropbox",
     mrr: "299.00",
   },
   subscription: {
@@ -34,7 +34,7 @@ const samplePayloads = {
 };
 
 export function WebhookTester() {
-  const [url, setUrl] = useState("https://api.acme.com/webhooks/foundry");
+  const [url, setUrl] = useState("https://api.dropbox.com/webhooks/foundry");
   const [payload, setPayload] = useState(JSON.stringify(samplePayloads.customer, null, 2));
   const [response, setResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ export function WebhookTester() {
         mapped_fields: {
           "contact.email": "test@example.com",
           "subscription.planTier": "enterprise",
-          "account.name": "Acme Corp",
+          "account.name": "Dropbox",
         },
       },
       duration: Math.floor(Math.random() * 300) + 100,

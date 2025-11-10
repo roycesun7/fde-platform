@@ -40,7 +40,7 @@ const activities: Activity[] = [
     title: "Replay events started",
     description: "Replaying 20 failed events",
     timestamp: "8 minutes ago",
-    user: "john@acme.com",
+    user: "john@dropbox.com",
     metadata: { count: 20 },
   },
   {
@@ -57,7 +57,7 @@ const activities: Activity[] = [
     title: "Configuration updated",
     description: "Webhook retry policy changed to exponential backoff",
     timestamp: "1 hour ago",
-    user: "sarah@acme.com",
+    user: "sarah@dropbox.com",
     metadata: { setting: "retry_policy" },
   },
   {

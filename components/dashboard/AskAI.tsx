@@ -10,7 +10,7 @@ import { Sparkles, Send, Loader2 } from "lucide-react";
 const sampleQuestions = [
   "Which deployment has the most errors?",
   "Show me healthy deployments",
-  "Compare Acme and Beta",
+  "Compare Dropbox and Ramp",
   "What's the error rate trend?",
 ];
 
@@ -50,44 +50,57 @@ export function AskAI() {
   };
 
   return (
-    <Card>
+    <Card className="hover-lift">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5" />
-            Ask AI
+            Query Assistant
           </div>
-          <Badge variant={mode === "llm" ? "default" : "secondary"} className="text-xs">
-            {mode === "llm" ? "LLM Mode" : "Stub Mode"}
+          <Badge 
+            variant={mode === "llm" ? "default" : "secondary"} 
+            className="text-xs font-semibold"
+          >
+            {mode === "llm" ? "LLM" : "Demo"}
           </Badge>
         </CardTitle>
+        <p className="text-sm text-muted-foreground mt-2">
+          Natural language queries for deployment data
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ask a question about your deployments..."
-            disabled={loading}
-          />
-          <Button type="submit" disabled={loading || !query.trim()}>
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
+          <div className="relative flex-1">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Ask about deployments, errors, or metrics..."
+              disabled={loading}
+              className="pr-10"
+            />
+            {loading && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
             )}
+          </div>
+          <Button 
+            type="submit" 
+            disabled={loading || !query.trim()}
+          >
+            <Send className="h-4 w-4" />
           </Button>
         </form>
 
         {answer && (
-          <div className="p-4 bg-muted rounded-lg">
-            <p className="text-sm">{answer}</p>
+          <div className="p-4 bg-muted/50 rounded border animate-fade-in">
+            <p className="text-sm leading-relaxed">{answer}</p>
           </div>
         )}
 
         {!answer && !loading && (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Try asking:</p>
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Common queries:</p>
             <div className="flex flex-wrap gap-2">
               {sampleQuestions.map((q, i) => (
                 <Button
@@ -105,9 +118,9 @@ export function AskAI() {
         )}
 
         {mode === "stub" && (
-          <p className="text-xs text-muted-foreground">
-            💡 Enable LLM Mode in Settings for AI-powered answers
-          </p>
+          <div className="flex items-center gap-2 p-3 bg-muted/50 rounded border text-xs text-muted-foreground">
+            Enable LLM Mode in Settings for AI-powered analysis
+          </div>
         )}
       </CardContent>
     </Card>
