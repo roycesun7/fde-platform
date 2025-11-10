@@ -61,7 +61,7 @@ export function SlackIntegration() {
     try {
       const success = await sendSlackNotification(webhookUrl, {
         title: 'Test Notification',
-        message: `This is a test notification from *Foundry FDE*\n\nChannel: ${channel}\nTimestamp: ${new Date().toLocaleString()}`,
+        message: `This is a test notification from *Quag Labs FDE*\n\nChannel: ${channel}\nTimestamp: ${new Date().toLocaleString()}`,
         emoji: '🧪',
         color: 'info',
         fields: [
@@ -311,7 +311,7 @@ export function SlackIntegration() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="font-bold">Foundry FDE</span>
+                      <span className="font-bold">Quag Labs FDE</span>
                       <Badge variant="outline" className="text-xs">APP</Badge>
                       <span className="text-xs text-muted-foreground">2:34 PM</span>
                     </div>

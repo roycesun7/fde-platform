@@ -89,14 +89,14 @@ export function LiveMetrics() {
                 <AreaChart data={history}>
                   <defs>
                     <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <Area
                     type="monotone"
                     dataKey="eventsPerSecond"
-                    stroke="hsl(var(--primary))"
+                    stroke="#3b82f6"
                     fill="url(#colorEvents)"
                     strokeWidth={2}
                   />
@@ -126,14 +126,14 @@ export function LiveMetrics() {
                   <AreaChart data={history}>
                     <defs>
                       <linearGradient id="colorErrors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <Area
                     type="monotone"
                     dataKey="errorRate"
-                    stroke="hsl(var(--destructive))"
+                    stroke="#ef4444"
                       fill="url(#colorErrors)"
                     strokeWidth={2}
                   />
@@ -163,14 +163,14 @@ export function LiveMetrics() {
                 <AreaChart data={history}>
                   <defs>
                     <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <Area
                     type="monotone"
                     dataKey="avgLatency"
-                    stroke="hsl(var(--chart-2))"
+                    stroke="#f59e0b"
                     fill="url(#colorLatency)"
                     strokeWidth={2}
                   />
@@ -199,14 +199,14 @@ export function LiveMetrics() {
                   <AreaChart data={history}>
                     <defs>
                       <linearGradient id="colorConnections" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-3))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--chart-3))" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <Area
                     type="stepAfter"
                     dataKey="activeConnections"
-                    stroke="hsl(var(--chart-3))"
+                    stroke="#10b981"
                       fill="url(#colorConnections)"
                     strokeWidth={2}
                   />

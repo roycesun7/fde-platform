@@ -20,7 +20,7 @@ export function Sidebar() {
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-2">
           <Rocket className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-bold">Foundry FDE</h1>
+          <h1 className="text-xl font-bold">Quag Labs FDE</h1>
         </div>
       </div>
 
