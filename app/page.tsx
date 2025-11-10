@@ -7,6 +7,7 @@ import { PainPointsPanel } from "@/components/dashboard/PainPointsPanel";
 import { LiveMetrics } from "@/components/dashboard/LiveMetrics";
 import { SearchFilter } from "@/components/dashboard/SearchFilter";
 import { AskAI } from "@/components/dashboard/AskAI";
+import { IntegrationActivity } from "@/components/dashboard/IntegrationActivity";
 
 interface Deployment {
   id: string;
@@ -59,38 +60,125 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Deployments</h1>
-          <p className="text-muted-foreground mt-1">
-            Monitor and manage your field data engine deployments
-          </p>
-        </div>
-
-        <SearchFilter
-          onSearch={setSearchQuery}
-          onFilterChange={setFilters}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filteredDeployments.length > 0 ? (
-            filteredDeployments.map((deployment) => (
-              <DeploymentCard key={deployment.id} deployment={deployment} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              <p>No deployments found matching your filters</p>
+      <div className="space-y-8">
+        {/* Header with Stats Bar */}
+        <div className="space-y-6 animate-fade-in">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight">Deployments</h1>
+              <p className="text-muted-foreground mt-2">
+                Monitor and manage field data engine deployments
+              </p>
             </div>
-          )}
+          </div>
+          
+          {/* Stats Bar */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 border rounded bg-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">Total</span>
+                <span className="text-2xl font-bold">{deployments.length}</span>
+              </div>
+              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded bg-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">Healthy</span>
+                <span className="text-2xl font-bold text-green-600">
+                  {deployments.filter(d => d.health === "healthy").length}
+                </span>
+              </div>
+              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-600" 
+                  style={{ width: `${(deployments.filter(d => d.health === "healthy").length / deployments.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded bg-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">Noisy</span>
+                <span className="text-2xl font-bold text-yellow-600">
+                  {deployments.filter(d => d.health === "noisy").length}
+                </span>
+              </div>
+              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-yellow-600" 
+                  style={{ width: `${(deployments.filter(d => d.health === "noisy").length / deployments.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div className="p-4 border rounded bg-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">Degraded</span>
+                <span className="text-2xl font-bold text-red-600">
+                  {deployments.filter(d => d.health === "degraded").length}
+                </span>
+              </div>
+              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-red-600" 
+                  style={{ width: `${(deployments.filter(d => d.health === "degraded").length / deployments.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <LiveMetrics />
+        {/* Search and Filters */}
+        <div className="bg-muted/30 -mx-6 px-6 py-6 border-y">
+          <SearchFilter
+            onSearch={setSearchQuery}
+            onFilterChange={setFilters}
+          />
+        </div>
 
+        {/* Deployment Grid with Staggered Animations */}
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredDeployments.length > 0 ? (
+              filteredDeployments.map((deployment, index) => (
+                <div 
+                  key={deployment.id} 
+                  className={`animate-fade-in stagger-${Math.min(index + 1, 6)}`}
+                  style={{ opacity: 0 }}
+                >
+                  <DeploymentCard deployment={deployment} />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 text-muted-foreground animate-fade-in">
+                <div className="space-y-2">
+                  <p className="text-lg font-medium">No deployments found</p>
+                  <p className="text-sm">Try adjusting your filters</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Metrics Section */}
+        <div className="separator-line pt-12">
+          <LiveMetrics />
+        </div>
+
+        {/* Insights Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <PainPointsPanel />
           </div>
           <AskAI />
+        </div>
+
+        {/* Integration Activity */}
+        <div className="separator-line pt-12">
+          <IntegrationActivity />
         </div>
       </div>
     </AppLayout>
