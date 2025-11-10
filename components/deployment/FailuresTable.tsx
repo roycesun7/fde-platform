@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,9 +53,8 @@ export function FailuresTable({ logs }: FailuresTableProps) {
             </thead>
             <tbody>
               {logs.slice(0, 10).map((log, i) => (
-                <>
+                <Fragment key={`${log.ts}-${i}`}>
                   <tr 
-                    key={i} 
                     className="border-b hover:bg-muted/30 transition-colors cursor-pointer"
                     onClick={() => toggleRow(i)}
                   >
@@ -79,7 +78,7 @@ export function FailuresTable({ logs }: FailuresTableProps) {
                     <td className="px-4 py-3 text-sm">{log.message}</td>
                   </tr>
                   {expandedRows.has(i) && log.payloadSample && (
-                    <tr key={`${i}-detail`} className="border-b bg-muted/20">
+                    <tr className="border-b bg-muted/20">
                       <td colSpan={4} className="px-4 py-3">
                         <div className="ml-10">
                           <div className="text-xs font-medium text-muted-foreground mb-2">Payload Sample:</div>
@@ -90,7 +89,7 @@ export function FailuresTable({ logs }: FailuresTableProps) {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
