@@ -31,11 +31,11 @@ export function CodeDiffViewer() {
 
   const fileDiffs: FileDiff[] = [
     {
-      filename: "src/mappings/acme.ts",
+      filename: "src/mappings/dropbox.ts",
       additions: 8,
       deletions: 2,
       diff: [
-        { type: "context", content: "export const acmeMapping = {", lineNumber: 12 },
+        { type: "context", content: "export const dropboxMapping = {", lineNumber: 12 },
         { type: "context", content: "  customer_id: 'id',", lineNumber: 13 },
         { type: "context", content: "  email: 'email',", lineNumber: 14 },
         { type: "remove", content: "  // TODO: Add plan_tier mapping", lineNumber: 15 },
@@ -51,11 +51,11 @@ export function CodeDiffViewer() {
       ],
     },
     {
-      filename: "src/types/acme.ts",
+      filename: "src/types/dropbox.ts",
       additions: 3,
       deletions: 0,
       diff: [
-        { type: "context", content: "export interface AcmeCustomer {", lineNumber: 5 },
+        { type: "context", content: "export interface DropboxCustomer {", lineNumber: 5 },
         { type: "context", content: "  id: string;", lineNumber: 6 },
         { type: "context", content: "  email: string;", lineNumber: 7 },
         { type: "add", content: "  plan_tier: 'free' | 'pro' | 'enterprise';", lineNumber: 8 },

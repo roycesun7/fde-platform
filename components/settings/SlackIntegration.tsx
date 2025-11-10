@@ -293,7 +293,7 @@ export function SlackIntegration() {
                     <span className="text-xs text-muted-foreground">2 days ago</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Sent to #deployments • Acme Corp config updated
+                    Sent to #deployments • Dropbox config updated
                   </p>
                 </div>
               </div>
@@ -318,7 +318,7 @@ export function SlackIntegration() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🚨</span>
-                        <span className="font-semibold">Error Alert: Acme Corp</span>
+                        <span className="font-semibold">Error Alert: Dropbox</span>
                       </div>
                       <p className="text-sm">
                         Error rate increased to <strong>15.2%</strong> (threshold: 10%)
@@ -327,7 +327,7 @@ export function SlackIntegration() {
                         <p className="font-mono text-xs">
                           <strong>Top Error:</strong> MAPPING_ERROR<br/>
                           <strong>Count:</strong> 48 occurrences<br/>
-                          <strong>Deployment:</strong> acme
+                          <strong>Deployment:</strong> dropbox
                         </p>
                       </div>
                       <div className="flex gap-2 pt-2">

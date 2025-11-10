@@ -229,7 +229,7 @@ Please analyze these issues and provide a step-by-step runbook to fix them.`;
     
     if (lowerQuery.includes("error") || lowerQuery.includes("problem")) {
       const problematic = deployments.filter(d => d.health !== "healthy");
-      return `Found ${problematic.length} deployment(s) with issues: ${problematic.map(d => d.name).join(", ")}. Acme Corp has the most errors with 48 in the last 24 hours.`;
+      return `Found ${problematic.length} deployment(s) with issues: ${problematic.map(d => d.name).join(", ")}. Dropbox has the most errors with 48 in the last 24 hours.`;
     }
     
     if (lowerQuery.includes("healthy") || lowerQuery.includes("good")) {
@@ -238,10 +238,10 @@ Please analyze these issues and provide a step-by-step runbook to fix them.`;
     }
     
     if (lowerQuery.includes("compare")) {
-      return "Acme Corp has 48 errors while Beta Inc only has 12. Acme needs attention on field mapping issues.";
+      return "Dropbox has 48 errors while Ramp only has 12. Dropbox needs attention on field mapping issues.";
     }
 
-    return `I found ${deployments.length} deployments. Acme Corp needs the most attention with noisy health status.`;
+    return `I found ${deployments.length} deployments. Dropbox needs the most attention with noisy health status.`;
   }
 
   isConfigured(): boolean {

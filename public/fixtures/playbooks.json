@@ -18,7 +18,7 @@
     "codeSamples": [
       {
         "language": "typescript",
-        "filename": "mappings/acme.ts",
+        "filename": "mappings/dropbox.ts",
         "content": "export function mapPlanTier(source: any) {\n  return {\n    'subscription.planTier': source.plan_tier?.toLowerCase() || 'starter'\n  };\n}"
       }
     ],

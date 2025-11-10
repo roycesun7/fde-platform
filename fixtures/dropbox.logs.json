@@ -1,0 +1,34 @@
+[
+  {
+    "timestamp": "2025-11-07T10:15:32Z",
+    "level": "error",
+    "code": "MAPPING_ERROR",
+    "message": "Field mapping failed: plan_tier is missing",
+    "metadata": {
+      "customer_email": "john@dropbox.com",
+      "subscription_id": "sub_123456",
+      "plan_tier": null
+    }
+  },
+  {
+    "timestamp": "2025-11-07T10:14:28Z",
+    "level": "error",
+    "code": "TYPE_MISMATCH",
+    "message": "Type mismatch for mrr: expected number, got string",
+    "metadata": {
+      "customer_email": "sarah@dropbox.com",
+      "mrr": "1250.00"
+    }
+  },
+  {
+    "timestamp": "2025-11-07T10:13:15Z",
+    "level": "error",
+    "code": "MAPPING_ERROR",
+    "message": "Field mapping failed: plan_tier is missing",
+    "metadata": {
+      "customer_email": "mike@dropbox.com",
+      "subscription_id": "sub_789012"
+    }
+  }
+]
+

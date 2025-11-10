@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, Rocket, GitCompare, Settings } from "lucide-react";
+import { LayoutDashboard, BookOpen, Rocket, FileCode, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/compare", label: "Compare", icon: GitCompare },
+  { href: "/templates", label: "Templates", icon: FileCode },
   { href: "/playbooks", label: "Playbooks", icon: BookOpen },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

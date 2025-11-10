@@ -16,7 +16,7 @@ class JobStoreClass {
   private nextId = 1;
 
   constructor() {
-    // Seed with 2 past jobs for Acme
+    // Seed with 2 past jobs for Dropbox
     this.seed();
   }
 
@@ -29,7 +29,7 @@ class JobStoreClass {
       id: "job-seed-1",
       type: "backfill",
       status: "succeeded",
-      deploymentId: "acme",
+      deploymentId: "dropbox",
       startedAt: twoHoursAgo.toISOString(),
       finishedAt: oneHourAgo.toISOString(),
       meta: { count: 250, processed: 250 },
@@ -39,7 +39,7 @@ class JobStoreClass {
       id: "job-seed-2",
       type: "replay_events",
       status: "succeeded",
-      deploymentId: "acme",
+      deploymentId: "dropbox",
       startedAt: oneHourAgo.toISOString(),
       finishedAt: new Date(oneHourAgo.getTime() + 5 * 60 * 1000).toISOString(),
       meta: { count: 15, replayed: 15 },

@@ -1,0 +1,128 @@
+[
+  {
+    "id": "plan-tier-normalization",
+    "title": "Plan Tier Normalization",
+    "description": "Normalize plan tier values to lowercase with fallback to 'starter'. This is one of the most common field mapping issues where source systems send plan tiers in various formats (uppercase, mixed case, or null).",
+    "category": "field-mapping",
+    "usageCount": 23,
+    "lastUsed": "2025-11-06T14:30:00Z",
+    "appliedTo": ["dropbox", "ramp", "palantir", "resolve"],
+    "code": {
+      "language": "typescript",
+      "filename": "mappings/planTier.ts",
+      "before": "import { MappingError } from '../errors';\nimport { logger } from '../logger';\n\ninterface SubscriptionSource {\n  plan_tier?: string;\n  plan_name?: string;\n  subscription_id: string;\n  customer_id: string;\n}\n\ninterface SubscriptionDestination {\n  'subscription.planTier': string;\n  'subscription.id': string;\n  'account.id': string;\n}\n\n/**\n * Maps plan tier from source to destination\n * @param source - Source subscription data\n * @returns Mapped subscription data\n */\nexport function mapPlanTier(source: SubscriptionSource): Partial<SubscriptionDestination> {\n  try {\n    const result: Partial<SubscriptionDestination> = {\n      'subscription.id': source.subscription_id,\n      'account.id': source.customer_id,\n    };\n\n    // Map plan tier directly\n    if (source.plan_tier) {\n      result['subscription.planTier'] = source.plan_tier;\n    }\n\n    return result;\n  } catch (error) {\n    logger.error('Failed to map plan tier', { error, source });\n    throw new MappingError('Plan tier mapping failed', error);\n  }\n}\n\nexport function mapSubscriptionData(source: SubscriptionSource): SubscriptionDestination {\n  const planTier = mapPlanTier(source);\n  return {\n    'subscription.planTier': planTier['subscription.planTier'] || '',\n    'subscription.id': source.subscription_id,\n    'account.id': source.customer_id,\n  };\n}",
+      "after": "import { MappingError } from '../errors';\nimport { logger } from '../logger';\n\ninterface SubscriptionSource {\n  plan_tier?: string;\n  plan_name?: string;\n  subscription_id: string;\n  customer_id: string;\n}\n\ninterface SubscriptionDestination {\n  'subscription.planTier': string;\n  'subscription.id': string;\n  'account.id': string;\n}\n\n/**\n * Normalizes plan tier value to lowercase with fallback\n * @param tier - Raw plan tier value from source\n * @returns Normalized plan tier (lowercase) or 'starter' as default\n */\nfunction normalizePlanTier(tier: string | null | undefined): string {\n  if (!tier) {\n    return 'starter';\n  }\n\n  const normalized = tier.trim().toLowerCase();\n  \n  // Validate against known tiers\n  const validTiers = ['starter', 'pro', 'enterprise', 'business', 'premium'];\n  if (validTiers.includes(normalized)) {\n    return normalized;\n  }\n\n  // Log warning for unknown tiers but still return normalized value\n  logger.warn('Unknown plan tier detected', { original: tier, normalized });\n  return normalized || 'starter';\n}\n\n/**\n * Maps plan tier from source to destination with normalization\n * @param source - Source subscription data\n * @returns Mapped subscription data with normalized plan tier\n */\nexport function mapPlanTier(source: SubscriptionSource): Partial<SubscriptionDestination> {\n  try {\n    const result: Partial<SubscriptionDestination> = {\n      'subscription.id': source.subscription_id,\n      'account.id': source.customer_id,\n    };\n\n    // Normalize and map plan tier\n    const normalizedTier = normalizePlanTier(source.plan_tier);\n    result['subscription.planTier'] = normalizedTier;\n\n    return result;\n  } catch (error) {\n    logger.error('Failed to map plan tier', { error, source });\n    throw new MappingError('Plan tier mapping failed', error);\n  }\n}\n\nexport function mapSubscriptionData(source: SubscriptionSource): SubscriptionDestination {\n  const planTier = mapPlanTier(source);\n  return {\n    'subscription.planTier': planTier['subscription.planTier'] || 'starter',\n    'subscription.id': source.subscription_id,\n    'account.id': source.customer_id,\n  };\n}"
+    },
+    "diff": {
+      "added": ["normalizePlanTier function", "trim()", "toLowerCase()", "validTiers validation", "warning logging", "fallback to 'starter'"],
+      "removed": ["direct assignment without normalization"]
+    },
+    "impact": "high",
+    "estimatedTime": "5 min"
+  },
+  {
+    "id": "mrr-type-conversion",
+    "title": "MRR Type Conversion",
+    "description": "Convert MRR from string to number with null handling. Many source systems send monetary values as strings, requiring type conversion for proper numeric operations.",
+    "category": "field-mapping",
+    "usageCount": 18,
+    "lastUsed": "2025-11-05T09:15:00Z",
+    "appliedTo": ["dropbox", "ramp", "palantir"],
+    "code": {
+      "language": "typescript",
+      "filename": "mappings/mrr.ts",
+      "before": "import { MappingError } from '../errors';\nimport { logger } from '../logger';\n\ninterface RevenueSource {\n  mrr?: string | number;\n  arr?: string | number;\n  currency?: string;\n  subscription_id: string;\n  billing_period?: string;\n}\n\ninterface RevenueDestination {\n  'subscription.monthlyRevenue': number | null;\n  'subscription.annualRevenue': number | null;\n  'subscription.currency': string;\n  'subscription.id': string;\n}\n\n/**\n * Maps MRR and ARR from source to destination\n * Handles both string and number formats from source\n */\nexport function mapRevenue(source: RevenueSource): Partial<RevenueDestination> {\n  const result: Partial<RevenueDestination> = {\n    'subscription.id': source.subscription_id,\n    'subscription.currency': source.currency || 'USD',\n  };\n\n  // Map MRR - direct assignment\n  if (source.mrr !== undefined && source.mrr !== null) {\n    result['subscription.monthlyRevenue'] = source.mrr as number;\n  }\n\n  // Map ARR if available\n  if (source.arr !== undefined && source.arr !== null) {\n    result['subscription.annualRevenue'] = source.arr as number;\n  }\n\n  return result;\n}\n\nexport function mapSubscriptionRevenue(\n  source: RevenueSource\n): RevenueDestination {\n  const revenue = mapRevenue(source);\n  \n  return {\n    'subscription.monthlyRevenue': revenue['subscription.monthlyRevenue'] ?? null,\n    'subscription.annualRevenue': revenue['subscription.annualRevenue'] ?? null,\n    'subscription.currency': revenue['subscription.currency'] || 'USD',\n    'subscription.id': source.subscription_id,\n  };\n}",
+      "after": "import { MappingError } from '../errors';\nimport { logger } from '../logger';\n\ninterface RevenueSource {\n  mrr?: string | number;\n  arr?: string | number;\n  currency?: string;\n  subscription_id: string;\n  billing_period?: string;\n}\n\ninterface RevenueDestination {\n  'subscription.monthlyRevenue': number | null;\n  'subscription.annualRevenue': number | null;\n  'subscription.currency': string;\n  'subscription.id': string;\n}\n\n/**\n * Converts monetary string to number, handling various formats\n * @param value - String or number value (e.g., \"$1,234.56\", \"1234.56\", 1234.56)\n * @returns Parsed number or null if invalid\n */\nfunction parseMonetaryValue(value: string | number | null | undefined): number | null {\n  if (value === null || value === undefined) {\n    return null;\n  }\n\n  // If already a number, return it\n  if (typeof value === 'number') {\n    return isNaN(value) ? null : value;\n  }\n\n  // Remove currency symbols, commas, and whitespace\n  const cleaned = value.toString().replace(/[\\$,\\s]/g, '');\n  \n  // Parse as float\n  const parsed = parseFloat(cleaned);\n  \n  // Validate the result\n  if (isNaN(parsed) || !isFinite(parsed)) {\n    logger.warn('Invalid monetary value', { original: value, cleaned });\n    return null;\n  }\n\n  // Ensure non-negative (log warning if negative)\n  if (parsed < 0) {\n    logger.warn('Negative revenue value detected', { value: parsed });\n  }\n\n  return parsed;\n}\n\n/**\n * Maps MRR and ARR from source to destination with type conversion\n * Handles string formats like \"$1,234.56\" and converts to numbers\n */\nexport function mapRevenue(source: RevenueSource): Partial<RevenueDestination> {\n  try {\n    const result: Partial<RevenueDestination> = {\n      'subscription.id': source.subscription_id,\n      'subscription.currency': source.currency || 'USD',\n    };\n\n    // Map MRR with type conversion\n    const mrr = parseMonetaryValue(source.mrr);\n    if (mrr !== null) {\n      result['subscription.monthlyRevenue'] = mrr;\n    } else {\n      result['subscription.monthlyRevenue'] = null;\n    }\n\n    // Map ARR with type conversion\n    const arr = parseMonetaryValue(source.arr);\n    if (arr !== null) {\n      result['subscription.annualRevenue'] = arr;\n    } else {\n      result['subscription.annualRevenue'] = null;\n    }\n\n    return result;\n  } catch (error) {\n    logger.error('Failed to map revenue', { error, source });\n    throw new MappingError('Revenue mapping failed', error);\n  }\n}\n\nexport function mapSubscriptionRevenue(\n  source: RevenueSource\n): RevenueDestination {\n  const revenue = mapRevenue(source);\n  \n  return {\n    'subscription.monthlyRevenue': revenue['subscription.monthlyRevenue'] ?? null,\n    'subscription.annualRevenue': revenue['subscription.annualRevenue'] ?? null,\n    'subscription.currency': revenue['subscription.currency'] || 'USD',\n    'subscription.id': source.subscription_id,\n  };\n}"
+    },
+    "diff": {
+      "added": ["parseMonetaryValue function", "Currency symbol removal", "Comma removal", "Whitespace trimming", "NaN validation", "Negative value detection", "Comprehensive error handling"],
+      "removed": ["Direct assignment without type conversion"]
+    },
+    "impact": "high",
+    "estimatedTime": "5 min"
+  },
+  {
+    "id": "exponential-backoff-retry",
+    "title": "Exponential Backoff Retry Policy",
+    "description": "Update retry policy to use exponential backoff instead of fixed intervals. This significantly improves reliability when dealing with rate-limited APIs or transient network issues.",
+    "category": "configuration",
+    "usageCount": 31,
+    "lastUsed": "2025-11-07T10:20:00Z",
+    "appliedTo": ["dropbox", "ramp", "palantir", "resolve", "gusto"],
+    "code": {
+      "language": "yaml",
+      "filename": "config/retry-policy.yaml",
+      "before": "retry:\n  maxAttempts: 3\n  intervalMs: 1000",
+      "after": "retry:\n  maxAttempts: 3\n  strategy: exponential\n  baseIntervalMs: 1000\n  maxIntervalMs: 10000\n  multiplier: 2"
+    },
+    "diff": {
+      "added": ["strategy: exponential", "baseIntervalMs: 1000", "maxIntervalMs: 10000", "multiplier: 2"],
+      "removed": ["intervalMs: 1000"]
+    },
+    "impact": "medium",
+    "estimatedTime": "10 min"
+  },
+  {
+    "id": "email-validation",
+    "title": "Email Validation and Normalization",
+    "description": "Add email validation and lowercase normalization. Ensures data quality by validating email format and normalizing to lowercase for consistent lookups and deduplication.",
+    "category": "field-mapping",
+    "usageCount": 27,
+    "lastUsed": "2025-11-04T16:45:00Z",
+    "appliedTo": ["dropbox", "ramp", "palantir", "resolve", "gusto"],
+    "code": {
+      "language": "typescript",
+      "filename": "mappings/email.ts",
+      "before": "export function mapEmail(source: any) {\n  return {\n    'contact.email': source.customer_email\n  };\n}",
+      "after": "export function mapEmail(source: any) {\n  const email = source.customer_email?.toLowerCase().trim();\n  const isValid = email && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n  return {\n    'contact.email': isValid ? email : null\n  };\n}"
+    },
+    "diff": {
+      "added": ["toLowerCase()", "trim()", "email validation regex", "null fallback"],
+      "removed": ["direct assignment"]
+    },
+    "impact": "high",
+    "estimatedTime": "8 min"
+  },
+  {
+    "id": "error-handling-wrapper",
+    "title": "Add Error Handling Wrapper",
+    "description": "Wrap mapping functions with try-catch and logging. This pattern prevents single field mapping errors from failing entire record processing and provides visibility into data quality issues.",
+    "category": "code-pattern",
+    "usageCount": 19,
+    "lastUsed": "2025-11-01T08:15:00Z",
+    "appliedTo": ["dropbox", "ramp", "palantir"],
+    "code": {
+      "language": "typescript",
+      "filename": "utils/errorHandler.ts",
+      "before": "export function mapField(source: any) {\n  return transform(source);\n}",
+      "after": "export function mapField(source: any) {\n  try {\n    return transform(source);\n  } catch (error) {\n    logger.error('Mapping error', { error, source });\n    return null;\n  }\n}"
+    },
+    "diff": {
+      "added": ["try-catch block", "logger.error()", "null return on error"],
+      "removed": []
+    },
+    "impact": "high",
+    "estimatedTime": "10 min"
+  },
+  {
+    "id": "date-format-standardization",
+    "title": "Date Format Standardization",
+    "description": "Convert various date formats to ISO 8601. Source systems often send dates in different formats (Unix timestamps, custom formats, timezone variants), requiring standardization for consistent processing.",
+    "category": "field-mapping",
+    "usageCount": 21,
+    "lastUsed": "2025-11-02T13:20:00Z",
+    "appliedTo": ["dropbox", "ramp", "resolve"],
+    "code": {
+      "language": "typescript",
+      "filename": "mappings/dates.ts",
+      "before": "export function mapDate(source: any) {\n  return {\n    'subscription.startDate': source.created_at\n  };\n}",
+      "after": "export function mapDate(source: any) {\n  const date = source.created_at ? new Date(source.created_at).toISOString() : null;\n  return {\n    'subscription.startDate': date\n  };\n}"
+    },
+    "diff": {
+      "added": ["new Date()", "toISOString()", "null handling"],
+      "removed": ["direct assignment"]
+    },
+    "impact": "high",
+    "estimatedTime": "7 min"
+  }
+]

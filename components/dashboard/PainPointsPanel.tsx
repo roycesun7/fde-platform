@@ -7,19 +7,19 @@ const painPoints = [
     title: "Missing field mappings",
     count: 48,
     severity: "high",
-    deployments: ["Acme Corp"],
+    deployments: ["Dropbox"],
   },
   {
     title: "Type mismatches",
     count: 12,
     severity: "medium",
-    deployments: ["Acme Corp"],
+    deployments: ["Dropbox"],
   },
   {
     title: "Rate limit errors",
     count: 5,
     severity: "low",
-    deployments: ["Gamma LLC"],
+    deployments: ["Palantir"],
   },
 ];
 

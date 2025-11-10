@@ -10,7 +10,7 @@ import { Sparkles, Send, Loader2 } from "lucide-react";
 const sampleQuestions = [
   "Which deployment has the most errors?",
   "Show me healthy deployments",
-  "Compare Acme and Beta",
+  "Compare Dropbox and Ramp",
   "What's the error rate trend?",
 ];
 
