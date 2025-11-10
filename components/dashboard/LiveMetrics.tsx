@@ -69,60 +69,60 @@ export function LiveMetrics() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="hover-lift">
-          <CardHeader>
+        <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="text-base font-semibold">Throughput</span>
               <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold tracking-tight">{metrics.eventsPerSecond}</span>
                 <span className="text-sm text-muted-foreground">events/sec</span>
-                <TrendIcon trend={trends.events} />
-              </div>
-              <div className="h-32">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={history}>
-                    <defs>
-                      <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <Area
-                      type="monotone"
-                      dataKey="eventsPerSecond"
-                      stroke="hsl(var(--primary))"
-                      fill="url(#colorEvents)"
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <TrendIcon trend={trends.events} />
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-32">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={history}>
+                  <defs>
+                    <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="eventsPerSecond"
+                    stroke="hsl(var(--primary))"
+                    fill="url(#colorEvents)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
         <Card className="hover-lift">
-          <CardHeader>
+        <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="text-base font-semibold">Error Rate</span>
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold tracking-tight text-red-600">{metrics.errorRate.toFixed(2)}%</span>
                 <span className="text-sm text-muted-foreground">current</span>
-                <TrendIcon trend={trends.errors} />
-              </div>
-              <div className="h-32">
-                <ResponsiveContainer width="100%" height="100%">
+              <TrendIcon trend={trends.errors} />
+            </div>
+            <div className="h-32">
+              <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={history}>
                     <defs>
                       <linearGradient id="colorErrors" x1="0" y1="0" x2="0" y2="1">
@@ -131,71 +131,71 @@ export function LiveMetrics() {
                       </linearGradient>
                     </defs>
                     <Area
-                      type="monotone"
-                      dataKey="errorRate"
-                      stroke="hsl(var(--destructive))"
+                    type="monotone"
+                    dataKey="errorRate"
+                    stroke="hsl(var(--destructive))"
                       fill="url(#colorErrors)"
-                      strokeWidth={2}
-                    />
+                    strokeWidth={2}
+                  />
                   </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              </ResponsiveContainer>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
         <Card className="hover-lift">
-          <CardHeader>
+        <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="text-base font-semibold">Latency</span>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold tracking-tight">{metrics.avgLatency}</span>
                 <span className="text-sm text-muted-foreground">ms</span>
-                <TrendIcon trend={trends.latency} />
-              </div>
-              <div className="h-32">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={history}>
-                    <defs>
-                      <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <Area
-                      type="monotone"
-                      dataKey="avgLatency"
-                      stroke="hsl(var(--chart-2))"
-                      fill="url(#colorLatency)"
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <TrendIcon trend={trends.latency} />
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-32">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={history}>
+                  <defs>
+                    <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="avgLatency"
+                    stroke="hsl(var(--chart-2))"
+                    fill="url(#colorLatency)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
         <Card className="hover-lift">
-          <CardHeader>
+        <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="text-base font-semibold">Connections</span>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold tracking-tight">{metrics.activeConnections}</span>
                 <span className="text-sm text-muted-foreground">active</span>
-              </div>
-              <div className="h-32">
-                <ResponsiveContainer width="100%" height="100%">
+            </div>
+            <div className="h-32">
+              <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={history}>
                     <defs>
                       <linearGradient id="colorConnections" x1="0" y1="0" x2="0" y2="1">
@@ -204,18 +204,18 @@ export function LiveMetrics() {
                       </linearGradient>
                     </defs>
                     <Area
-                      type="stepAfter"
-                      dataKey="activeConnections"
-                      stroke="hsl(var(--chart-3))"
+                    type="stepAfter"
+                    dataKey="activeConnections"
+                    stroke="hsl(var(--chart-3))"
                       fill="url(#colorConnections)"
-                      strokeWidth={2}
-                    />
+                    strokeWidth={2}
+                  />
                   </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              </ResponsiveContainer>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
       </div>
     </div>
   );
