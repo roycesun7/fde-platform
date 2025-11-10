@@ -19,60 +19,42 @@ export async function POST(request: Request) {
     const errorRate = ((stats.errorCount / stats.totalEvents) * 100).toFixed(1);
     const successRate = (100 - parseFloat(errorRate)).toFixed(1);
 
-    // Get top 3 errors
+    // Get top errors for narrative format
     const topErrors = Object.entries(stats.errorsByType)
       .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 3)
-      .map(([type, count]) => `• *${type}*: ${count} occurrences`)
-      .join('\n');
+      .map(([type, count]) => `\`${type}\` (${count})`)
+      .join(', ');
 
-    // Build detailed Slack message
+    // Build cohesive Slack message
+    const isAlerting = parseFloat(errorRate) >= config.errorRateThreshold;
+    const statusText = isAlerting ? "Would Alert" : "Below Threshold";
+    
+    // Create a cohesive narrative message
+    const mainMessage = `*Test Alert: ${deploymentName}*\n\n` +
+      `This is a test alert for the ${deploymentName} deployment. ` +
+      `Over the past 24 hours, we've processed *${stats.totalEvents.toLocaleString()}* events with ` +
+      `*${stats.errorCount}* errors (${errorRate}% error rate, ${successRate}% success rate). ` +
+      `${stats.errorCount > 0 && topErrors ? `The most common issues are: ${topErrors}.` : 'No errors recorded.'}\n\n` +
+      `Alert configuration: ${config.errorRateThreshold}% threshold, ${config.minErrorCount} minimum errors, ` +
+      `${config.cooldownMinutes}-minute cooldown. *Current status: ${statusText}.*`;
+    
     const payload = {
-      text: `🧪 Test Alert: ${deploymentName}`,
+      text: `Test Alert: ${deploymentName}`,
       blocks: [
         {
-          type: "header",
-          text: {
-            type: "plain_text",
-            text: `🧪 Test Alert: ${deploymentName}`,
-            emoji: true
-          }
-        },
-        {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `This is a test alert for *${deploymentName}* deployment.\n\nChannel: ${channel}\nTimestamp: <!date^${Math.floor(Date.now() / 1000)}^{date_short_pretty} at {time}|${new Date().toLocaleString()}>`
+            text: mainMessage
           }
         },
         {
-          type: "divider"
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "*📊 Current Statistics*"
-          }
-        },
-        {
-          type: "section",
-          fields: [
+          type: "context",
+          elements: [
             {
               type: "mrkdwn",
-              text: `*Total Errors (24h)*\n${stats.errorCount}`
-            },
-            {
-              type: "mrkdwn",
-              text: `*Error Rate*\n${errorRate}%`
-            },
-            {
-              type: "mrkdwn",
-              text: `*Success Rate*\n${successRate}%`
-            },
-            {
-              type: "mrkdwn",
-              text: `*Total Events*\n${stats.totalEvents.toLocaleString()}`
+              text: `<!date^${Math.floor(Date.now() / 1000)}^{date_short_pretty} at {time}|${new Date().toLocaleString()}> • ${channel}`
             }
           ]
         },
@@ -81,20 +63,24 @@ export async function POST(request: Request) {
         },
         {
           type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `*🔥 Top Errors*\n${topErrors || '• No errors recorded'}`
-          }
-        },
-        {
-          type: "divider"
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "*⚙️ Alert Configuration*"
-          }
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `*Total Events*\n${stats.totalEvents.toLocaleString()}`
+            },
+            {
+              type: "mrkdwn",
+              text: `*Errors (24h)*\n${stats.errorCount}`
+            },
+            {
+              type: "mrkdwn",
+              text: `*Error Rate*\n${errorRate}%`
+            },
+            {
+              type: "mrkdwn",
+              text: `*Success Rate*\n${successRate}%`
+            }
+          ]
         },
         {
           type: "section",
@@ -113,7 +99,7 @@ export async function POST(request: Request) {
             },
             {
               type: "mrkdwn",
-              text: `*Status*\n${parseFloat(errorRate) >= config.errorRateThreshold ? '🚨 Would Alert' : '✅ Below Threshold'}`
+              text: `*Status*\n${statusText}`
             }
           ]
         },
@@ -124,15 +110,11 @@ export async function POST(request: Request) {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "*📈 Recent Activity*"
+            text: `*Recent Activity*\n${generateRecentActivity(deploymentName, stats)}`
           }
         },
         {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: generateRecentActivity(deploymentName, stats)
-          }
+          type: "divider"
         },
         {
           type: "actions",
@@ -142,7 +124,7 @@ export async function POST(request: Request) {
               text: {
                 type: "plain_text",
                 text: "View Deployment",
-                emoji: true
+                emoji: false
               },
               url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/d/${deploymentId}`,
               style: "primary"
@@ -152,7 +134,7 @@ export async function POST(request: Request) {
               text: {
                 type: "plain_text",
                 text: "Configure Alerts",
-                emoji: true
+                emoji: false
               },
               url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/d/${deploymentId}?tab=alerts`
             }
@@ -163,14 +145,14 @@ export async function POST(request: Request) {
           elements: [
             {
               type: "mrkdwn",
-              text: "✅ This is a test alert. Real alerts will be sent when error thresholds are exceeded."
+              text: "_This is a test alert. Real alerts will be sent automatically when error thresholds are exceeded._"
             }
           ]
         }
       ],
       attachments: [
         {
-          color: parseFloat(errorRate) >= config.errorRateThreshold ? "#ef4444" : "#10b981",
+          color: isAlerting ? "#ef4444" : "#10b981",
           blocks: []
         }
       ]
@@ -210,26 +192,30 @@ export async function POST(request: Request) {
 function generateRecentActivity(deploymentName: string, stats: any): string {
   const activities = [];
   
-  // Simulated recent activity based on stats
   if (stats.errorCount > 0) {
-    activities.push(`• Last error spike: 2 hours ago (${Math.floor(stats.errorCount / 2)} errors)`);
+    activities.push(`Last error spike: 2 hours ago (${Math.floor(stats.errorCount / 2)} errors)`);
   }
   
   if (stats.errorCount > 20) {
-    activities.push(`• High error rate detected: 4 hours ago`);
+    activities.push(`High error rate detected: 4 hours ago`);
   }
   
-  activities.push(`• Total events processed today: ${stats.totalEvents.toLocaleString()}`);
+  activities.push(`Total events processed today: ${stats.totalEvents.toLocaleString()}`);
   
-  if (stats.errorsByType) {
-    const topError = Object.entries(stats.errorsByType)[0];
-    if (topError) {
-      activities.push(`• Most common issue: ${topError[0]}`);
+  if (stats.errorsByType && Object.keys(stats.errorsByType).length > 0) {
+    const topError = Object.entries(stats.errorsByType)
+      .sort(([, a], [, b]) => (b as number) - (a as number))[0];
+    if (topError && topError[0]) {
+      activities.push(`Most common issue: \`${topError[0]}\``);
+    } else {
+      activities.push(`Most common issue: None`);
     }
+  } else {
+    activities.push(`Most common issue: None`);
   }
   
-  activities.push(`• Last configuration update: 1 day ago`);
+  activities.push(`Last configuration update: 1 day ago`);
   
-  return activities.join('\n');
+  return activities.map(a => `• ${a}`).join('\n');
 }
 
