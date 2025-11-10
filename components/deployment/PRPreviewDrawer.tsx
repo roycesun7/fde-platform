@@ -30,57 +30,19 @@ export function PRPreviewDrawer({
 
   const handleCreatePR = async () => {
     try {
-      // Get GitHub credentials if available
-      const githubToken = localStorage.getItem("github_token");
-      const githubRepo = localStorage.getItem("github_repo");
-      
-      // Prepare file content for GitHub
-      const fileContent = `export function mapEvent(event: any) {
-  const mapped = {
-    'subscription.id': event.subscription_id,
-  };
-
-  // Add missing plan_tier mapping
-  if (event.plan_tier) {
-    mapped['subscription.planTier'] = event.plan_tier.toLowerCase();
-  }
-
-  return mapped;
-}`;
-      
       const res = await fetch("/api/actions/create-pr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           deploymentId,
           diff: `Add mapping for ${missingMapping?.source}`,
-          title: `Add mapping for ${missingMapping?.source}`,
-          ...(githubToken && githubRepo && {
-            githubToken,
-            githubRepo,
-            branch: `fde/add-mapping-${missingMapping?.source}-${Date.now()}`,
-            files: [{
-              path: `mappings/${deploymentId}.ts`,
-              content: fileContent,
-              message: `Add mapping for ${missingMapping?.source}`,
-            }],
-          }),
         }),
       });
 
       const data = await res.json();
       
-      if (!res.ok) {
-        toast.error(data.error || "Failed to create PR");
-        return;
-      }
-      
       // Show GitHub PR created
-      if (data.mock) {
-        toast.success(`PR #${data.prNumber} created (demo mode)`);
-      } else {
-        toast.success(`PR #${data.prNumber} created successfully!`);
-      }
+      toast.success(`PR #${data.prNumber} created successfully!`);
       
       // Send real Slack notification (if Slack is connected)
       const slackConnected = localStorage.getItem("slack-connected");

@@ -74,18 +74,7 @@ export function RunbookChat({ deploymentId }: RunbookChatProps) {
       switch (action) {
         case "create_pr":
           endpoint = "/api/actions/create-pr";
-          const githubToken = localStorage.getItem("github_token");
-          const githubRepo = localStorage.getItem("github_repo");
-          body = { 
-            deploymentId, 
-            diff: "Auto-generated diff",
-            title: `Fix: ${deploymentId} deployment issues`,
-            ...(githubToken && githubRepo && {
-              githubToken,
-              githubRepo,
-              branch: `fde/${deploymentId}-fix-${Date.now()}`,
-            }),
-          };
+          body = { deploymentId, diff: "Auto-generated diff" };
           break;
         case "run_backfill":
           endpoint = "/api/actions/run-backfill";
@@ -105,17 +94,8 @@ export function RunbookChat({ deploymentId }: RunbookChatProps) {
 
       const data = await res.json();
       
-      if (!res.ok) {
-        toast.error(data.error || "Failed to execute action");
-        return;
-      }
-      
       if (action === "create_pr") {
-        if (data.mock) {
-          toast.success(`PR #${data.prNumber} created (demo mode)`);
-        } else {
-          toast.success(`PR #${data.prNumber} created!`);
-        }
+        toast.success(`PR #${data.prNumber} created!`);
       } else {
         toast.success(`Job ${data.jobId} queued`);
       }
