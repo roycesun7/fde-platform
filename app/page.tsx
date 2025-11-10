@@ -8,6 +8,9 @@ import { LiveMetrics } from "@/components/dashboard/LiveMetrics";
 import { SearchFilter } from "@/components/dashboard/SearchFilter";
 import { AskAI } from "@/components/dashboard/AskAI";
 import { IntegrationActivity } from "@/components/dashboard/IntegrationActivity";
+import { ProjectTree } from "@/components/dashboard/ProjectTree";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { mockProjects } from "@/lib/mockProjectData";
 
 interface Deployment {
   id: string;
@@ -23,6 +26,7 @@ export default function DashboardPage() {
   const [filteredDeployments, setFilteredDeployments] = useState<Deployment[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({ health: "all", env: "all" });
+  const [viewMode, setViewMode] = useState<"tree" | "grid">("tree");
 
   useEffect(() => {
     fetch("/api/deployments")
@@ -58,6 +62,9 @@ export default function DashboardPage() {
     setFilteredDeployments(filtered);
   }, [searchQuery, filters, deployments]);
 
+  // Use realistic mock project data
+  const projects = mockProjects;
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -65,9 +72,9 @@ export default function DashboardPage() {
         <div className="space-y-6 animate-fade-in">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight">Deployments</h1>
+              <h1 className="text-4xl font-bold tracking-tight">Projects & Deployments</h1>
               <p className="text-muted-foreground mt-2">
-                Monitor and manage field data engine deployments
+                Hierarchical view of projects and their deployments
               </p>
             </div>
           </div>
@@ -139,29 +146,42 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Deployment Grid with Staggered Animations */}
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredDeployments.length > 0 ? (
-              filteredDeployments.map((deployment, index) => (
-                <div 
-                  key={deployment.id} 
-                  className={`animate-fade-in stagger-${Math.min(index + 1, 6)}`}
-                  style={{ opacity: 0 }}
-                >
-                  <DeploymentCard deployment={deployment} />
+        {/* View Toggle */}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "tree" | "grid")} className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="tree">Tree View</TabsTrigger>
+            <TabsTrigger value="grid">Grid View</TabsTrigger>
+          </TabsList>
+
+          {/* Tree View */}
+          <TabsContent value="tree" className="space-y-6">
+            <ProjectTree projects={projects} />
+          </TabsContent>
+
+          {/* Grid View */}
+          <TabsContent value="grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredDeployments.length > 0 ? (
+                filteredDeployments.map((deployment, index) => (
+                  <div 
+                    key={deployment.id} 
+                    className={`animate-fade-in stagger-${Math.min(index + 1, 6)}`}
+                    style={{ opacity: 0 }}
+                  >
+                    <DeploymentCard deployment={deployment} />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-16 text-muted-foreground animate-fade-in">
+                  <div className="space-y-2">
+                    <p className="text-lg font-medium">No deployments found</p>
+                    <p className="text-sm">Try adjusting your filters</p>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16 text-muted-foreground animate-fade-in">
-                <div className="space-y-2">
-                  <p className="text-lg font-medium">No deployments found</p>
-                  <p className="text-sm">Try adjusting your filters</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Metrics Section */}
         <div className="separator-line pt-12">
