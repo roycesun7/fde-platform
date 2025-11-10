@@ -12,7 +12,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <TopBar />
         <main className="flex-1 overflow-auto bg-background p-6 md:p-8 lg:p-10">
           <div className="max-w-[1800px] mx-auto">
-            {children}
+          {children}
           </div>
         </main>
       </div>

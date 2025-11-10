@@ -28,7 +28,7 @@ export function IntegrationsStatus() {
       slack: slackConnected,
       github: githubConnected,
       llm: llmConfig ? (() => {
-        const config = JSON.parse(llmConfig);
+      const config = JSON.parse(llmConfig);
         return !config.useStub && !!config.apiKey;
       })() : false
     });

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code2, Sparkles, Send, Copy, Check, Zap, FileCode, Terminal } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";import { Code2, Sparkles, Send, Copy, Check, Zap, FileCode, Terminal } from "lucide-react";
 
 const codeExamples = [
   {
@@ -924,6 +924,7 @@ export function CodeAssistant() {
   const [selectedTab, setSelectedTab] = useState<"code" | "explanation">("code");
   const [typingCode, setTypingCode] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("gpt-4-turbo");
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -1024,9 +1025,23 @@ export function CodeAssistant() {
                   AI-Generated
                 </Badge>
               </div>
-              <p className="text-sm font-normal text-muted-foreground mt-1">
-                Production-ready code tailored to your deployment
-              </p>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <p className="text-sm font-normal text-muted-foreground">
+                  Production-ready code tailored to your deployment
+                </p>
+                <span className="text-muted-foreground text-sm">·</span>
+                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                  <SelectTrigger className="w-[160px] h-7 text-xs border-indigo-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="claude-sonnet-4.5">Claude Sonnet 4.5</SelectItem>
+                    <SelectItem value="gpt-5">GPT-5</SelectItem>
+                    <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                    <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardTitle>
         </div>

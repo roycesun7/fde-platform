@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Send, Brain, Zap, TrendingUp, AlertCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Get actual deployment data from the page
 const getDeploymentData = () => {
@@ -36,11 +37,14 @@ const sampleQuestions = [
   "Analyze deployment health and recommend optimizations",
   "Which deployments are at risk and why?",
   "Compare production vs development error patterns",
-  "What's the root cause of TechStart's degraded status?",
-  "Show me the most stable deployment configuration",
-  "Which custom configurations are causing issues?",
 ];
 
+const AI_MODELS = [
+  { id: "claude-sonnet-4", name: "Claude Sonnet 4", badge: "Latest" },
+  { id: "gpt-5", name: "GPT-5", badge: "Latest" },
+  { id: "gpt-4-turbo", name: "GPT-4 Turbo", badge: "Fast" },
+  { id: "gemini-2-5-flash", name: "Gemini 2.5 Flash", badge: "Fast" },
+];
 const thinkingSteps = [
   "Scanning 12 deployments across 4 companies...",
   "Analyzing 116 errors and patterns...",
@@ -637,6 +641,7 @@ export function AskAI() {
   const [loading, setLoading] = useState(false);
   const [thinkingStep, setThinkingStep] = useState(0);
   const [typingText, setTypingText] = useState("");
+  const [selectedModel, setSelectedModel] = useState("gpt-4-turbo");
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -684,7 +689,7 @@ export function AskAI() {
     // Brief random pause before showing answer (simulating final analysis)
     await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 400));
     
-    setLoading(false);
+      setLoading(false);
     setAnswer(intelligentAnswer);
     
     // Type out the answer with realistic speed
@@ -719,9 +724,23 @@ export function AskAI() {
                   AI-Powered
           </Badge>
               </div>
-              <p className="text-sm font-normal text-muted-foreground mt-1">
-                Natural language analysis with real-time insights
-              </p>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <p className="text-sm font-normal text-muted-foreground">
+                  Natural language analysis with real-time insights
+                </p>
+                <span className="text-muted-foreground text-sm">·</span>
+                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                  <SelectTrigger className="w-[160px] h-7 text-xs border-purple-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="claude-sonnet-4.5">Claude Sonnet 4.5</SelectItem>
+                    <SelectItem value="gpt-5">GPT-5</SelectItem>
+                    <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                    <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
         </CardTitle>
         </div>
@@ -835,14 +854,14 @@ export function AskAI() {
               <Sparkles className="h-4 w-4 text-purple-600" />
               <span>Try these intelligent queries</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-2">
               {sampleQuestions.map((q, i) => (
                 <Button
                   key={i}
                   variant="outline"
                   size="sm"
                   onClick={() => askQuestion(q)}
-                  className="text-xs justify-start h-auto py-3.5 px-4 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 hover:shadow-md transition-all group"
+                  className="text-xs justify-start h-auto py-3 px-4 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 hover:shadow-sm transition-all group"
                 >
                   <Brain className="h-3.5 w-3.5 mr-2.5 text-purple-600 flex-shrink-0 group-hover:scale-110 transition-transform" />
                   <span className="text-left font-medium">{q}</span>
