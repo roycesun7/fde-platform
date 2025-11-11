@@ -231,7 +231,7 @@ export function GitHubIntegration() {
               ))}
 
               <p className="text-xs text-muted-foreground text-center pt-2">
-                Showing last 3 PRs created by Quag Labs FDE
+                Showing last 3 PRs created by Qwil AI
               </p>
             </TabsContent>
           </Tabs>

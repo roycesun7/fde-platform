@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quag Labs FDE",
+  title: "Qwil AI",
   description: "Field Data Engine Demo",
 };
 

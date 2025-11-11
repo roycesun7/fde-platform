@@ -7,9 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { KPICard } from "@/components/deployment/KPICard";
 import { FailuresTable } from "@/components/deployment/FailuresTable";
-import { MappingsTable } from "@/components/deployment/MappingsTable";
 import { JobsList } from "@/components/deployment/JobsList";
 import { ErrorAnalytics } from "@/components/deployment/ErrorAnalytics";
+import { WebhookTester } from "@/components/deployment/WebhookTester";
+import { ActivityTimeline } from "@/components/deployment/ActivityTimeline";
+import { CodeDiffViewer } from "@/components/deployment/CodeDiffViewer";
 import { SlackAlertConfig } from "@/components/deployment/SlackAlertConfig";
 import { CodeAssistant } from "@/components/deployment/CodeAssistant";
 import { AlertCircle, CheckCircle, TrendingUp, Clock } from "lucide-react";
@@ -196,7 +198,6 @@ export default function DeploymentDetailPage() {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="mappings">Mappings</TabsTrigger>
             <TabsTrigger value="code">Code</TabsTrigger>
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="alerts">Alerts</TabsTrigger>
@@ -239,13 +240,6 @@ export default function DeploymentDetailPage() {
 
           <TabsContent value="analytics">
             <ErrorAnalytics logs={deployment.logs || []} />
-          </TabsContent>
-
-          <TabsContent value="mappings">
-            <MappingsTable
-              mappings={deployment.mappings || []}
-              deploymentId={id}
-            />
           </TabsContent>
 
           <TabsContent value="code" className="space-y-6">
